@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Phishing Check</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="game-container">
+
+        <h1>PHISHING CHECK</h1>
+
+
+        <!-- 게임 방법 -->
+        <section class="guide">
+
+            <h2>게임 방법</h2>
+
+            <p>
+                랜덤으로 출제되는 10개의 메일을 보고
+                정상 메일인지 피싱 메일인지 판단하세요.<br>
+
+                각 메일은 5초 안에 선택해야 합니다.<br>
+
+                7개 이상 맞히면 성공합니다.
+            </p>
+
+            <p>
+                <strong>조작:</strong>
+                [정상 메일] 또는 [피싱 메일] 버튼을 클릭하세요.
+            </p>
+
+        </section>
+
+
+        <!-- 상태 표시 -->
+        <section class="status-box">
+
+            <div class="status-info">
+
+                <p>
+                    현재 상태:
+                    <strong id="status">READY</strong>
+                </p>
+
+                <p>
+                    문제:
+                    <strong id="questionNumber">1</strong>
+                    /
+                    <strong id="totalQuestions">10</strong>
+                </p>
+
+                <p>
+                    점수:
+                    <strong id="score">0</strong>
+                </p>
+
+                <p>
+                    최고 점수:
+                    <strong id="bestScore">0</strong>
+                </p>
+
+                <p>
+                    남은 시간:
+                    <strong id="timeLeft">5</strong>초
+                </p>
+
+            </div>
+
+            <div id="result" class="result-box"></div>
+
+        </section>
+
+
+        <!-- 메일 화면 -->
+        <section class="mail-layout">
+
+
+            <!-- 왼쪽 메뉴 -->
+            <aside class="mail-sidebar">
+
+                <div class="mail-logo">✉</div>
+
+                <div class="mail-menu active">
+                    <span class="menu-icon">▣</span>
+                    <span>받은 편지함</span>
+                </div>
+
+                <div class="mail-menu">
+                    <span class="menu-icon">★</span>
+                    <span>중요 메일</span>
+                </div>
+
+                <div class="mail-menu">
+                    <span class="menu-icon">⌁</span>
+                    <span>보낸 메일</span>
+                </div>
+
+                <div class="mail-menu">
+                    <span class="menu-icon">▤</span>
+                    <span>임시 보관</span>
+                </div>
+
+            </aside>
+
+
+            <!-- 메일 내용 -->
+            <div class="mail-card">
+
+                <div class="mail-toolbar">
+                    받은 편지함
+                </div>
+
+                <div class="mail-header">
+
+                    <p>
+                        <span class="mail-label">보낸 사람</span>
+                        <span id="sender"></span>
+                    </p>
+
+                    <p>
+                        <span class="mail-label">제목</span>
+                        <strong id="subject"></strong>
+                    </p>
+
+                </div>
+
+
+                <div class="mail-body">
+                    <p id="message"></p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 정답 버튼 -->
+        <div class="answer-buttons">
+
+            <button id="safeButton">
+                정상 메일
+            </button>
+
+            <button id="phishingButton">
+                피싱 메일
+            </button>
+
+        </div>
+
+
+        <!-- 조작 버튼 -->
+        <div class="control-buttons">
+
+            <button id="pauseButton">
+                일시정지
+            </button>
+
+            <button id="restartButton">
+                다시 시작
+            </button>
+
+        </div>
+
+        <label class="effect-option">
+            <input type="checkbox" id="reduceMotion">
+            움직임 효과 줄이기
+        </label>
+
+    </main>
+
+
+
+    <script>
+
+        /* ======================================================
+           메일 문제 목록
+           총 16개 중 매 게임마다 랜덤 10개 출제
+        ====================================================== */
+
+        const emails = [
+
+            {
+                sender: "order@shop.com",
+                subject: "주문이 정상적으로 접수되었습니다.",
+                message: "주문번호 20261013의 상품이 준비 중입니다.",
+                answer: "safe"
+            },
+
+            {
+                sender: "tax-refund@korea-gov-support.com",
+                subject: "세금 환급금 수령 안내",
+                message: "환급금을 받으려면 계좌번호와 비밀번호를 입력하세요.",
+                answer: "phishing"
+            },
+
+            {
+                sender: "cloud@service.com",
+                subject: "저장 공간 사용량 안내",
+                message: "현재 저장 공간의 80%를 사용 중입니다.",
+                answer: "safe"
+            },
+
+            {
+                sender: "cloud-storage-alert@secure-upgrade.xyz",
+                subject: "저장 공간이 곧 삭제됩니다.",
+                message: "계정을 유지하려면 지금 로그인 정보를 입력하세요.",
+                answer: "phishing"
+            },
+
+            {
+                sender: "reservation@hotel.com",
+                subject: "예약 확인 안내",
+                message: "10월 20일 예약이 정상적으로 완료되었습니다.",
+                answer: "safe"
+            },
+
+            {
+                sender: "booking-confirm@hotel-refund.net",
+                subject: "예약 취소 수수료 결제",
+                message: "수수료 환불 요청을 위해 카드 정보를 다시 입력하세요.",
+                answer: "phishing"
+            },
+
+            {
+                sender: "security@goog1e-support.com",
+                subject: "[긴급] 계정이 정지됩니다.",
+                message: "지금 바로 비밀번호를 확인하세요.",
+                answer: "phishing"
+            },
+
+            {
+                sender: "team@company.com",
+                subject: "내일 회의 일정 안내",
+                message: "내일 오전 10시에 회의실에서 회의가 있습니다.",
+                answer: "safe"
+            },
+
+            {
+                sender: "gift-event@free-prize.com",
+                subject: "축하합니다! 상품에 당첨되었습니다.",
+                message: "상품 수령을 위해 개인정보와 비밀번호를 입력하세요.",
+                answer: "phishing"
+            },
+
+            {
+                sender: "hr@company.com",
+                subject: "10월 사내 교육 안내",
+                message: "사내 교육 일정과 장소를 안내드립니다.",
+                answer: "safe"
+            },
+
+            {
+                sender: "bank-security@account-check.net",
+                subject: "계좌 보안 확인 필요",
+                message: "24시간 이내에 계좌 정보를 입력하지 않으면 이용이 제한됩니다.",
+                answer: "phishing"
+            },
+
+            {
+                sender: "library@school.ac.kr",
+                subject: "도서 반납 예정일 안내",
+                message: "대출한 도서의 반납 예정일은 10월 10일입니다.",
+                answer: "safe"
+            },
+
+            {
+                sender: "delivery@parcel-check.xyz",
+                subject: "배송 주소 오류",
+                message: "배송을 계속하려면 카드번호를 입력하세요.",
+                answer: "phishing"
+            },
+
+            {
+                sender: "professor@school.ac.kr",
+                subject: "과제 제출 일정 안내",
+                message: "이번 과제 제출 기한은 금요일 오후 6시입니다.",
+                answer: "safe"
+            },
+
+            {
+                sender: "support@micr0soft-login.com",
+                subject: "비밀번호 만료 안내",
+                message: "아래 링크에서 즉시 비밀번호를 다시 입력하세요.",
+                answer: "phishing"
+            },
+
+            {
+                sender: "notice@company.com",
+                subject: "사무실 점검 안내",
+                message: "이번 주 토요일 오전에 사무실 전기 점검이 예정되어 있습니다.",
+                answer: "safe"
+            }
+
+        ];
+
+
+        /* 한 게임에서 출제할 문제 수 */
+        const QUESTIONS_PER_GAME = 10;
+
+
+        /* ======================================================
+           게임 상태
+        ====================================================== */
+
+        let shuffledEmails = [];
+
+        let currentQuestion = 0;
+
+        let score = 0;
+
+        let bestScore = 0;
+
+        function loadBestScore() {
+
+            try {
+
+                const savedBestScore =
+                    localStorage.getItem("bestScore");
+
+                if (savedBestScore === null) {
+
+                    bestScore = 0;
+
+                } else {
+
+                    const parsedScore =
+                        Number(savedBestScore);
+
+                    if (
+                        Number.isNaN(parsedScore) ||
+                        parsedScore < 0 ||
+                        parsedScore > QUESTIONS_PER_GAME
+                    ) {
+
+                        bestScore = 0;
+
+                    } else {
+
+                        bestScore = parsedScore;
+
+                    }
+
+                }
+
+            } catch (error) {
+
+                bestScore = 0;
+
+            }
+
+
+            bestScoreText.textContent =
+                bestScore;
+        }
+
+
+        function saveBestScore() {
+
+            try {
+
+                localStorage.setItem(
+                    "bestScore",
+                    bestScore
+                );
+
+            } catch (error) {
+
+                console.log(
+                    "최고 점수를 저장하지 못했습니다."
+                );
+
+            }
+
+        }
+
+        let timeLeft = 5;
+
+        let timer = null;
+
+        let isPaused = false;
+
+        let autoPaused = false;
+
+
+
+        /* ======================================================
+           HTML 요소 가져오기
+        ====================================================== */
+
+        const senderText =
+            document.getElementById("sender");
+
+        const subjectText =
+            document.getElementById("subject");
+
+        const messageText =
+            document.getElementById("message");
+
+        const questionNumberText =
+            document.getElementById("questionNumber");
+
+        const totalQuestionsText =
+            document.getElementById("totalQuestions");
+
+        const scoreText =
+            document.getElementById("score");
+
+        const bestScoreText =
+            document.getElementById("bestScore");
+
+        const timeLeftText =
+            document.getElementById("timeLeft");
+
+        const resultText =
+            document.getElementById("result");
+
+        const statusText =
+            document.getElementById("status");
+
+        const safeButton =
+            document.getElementById("safeButton");
+
+        const phishingButton =
+            document.getElementById("phishingButton");
+
+        const pauseButton =
+            document.getElementById("pauseButton");
+
+        const restartButton =
+            document.getElementById("restartButton");
+
+        const reduceMotionCheckbox =
+            document.getElementById("reduceMotion");
+
+
+        totalQuestionsText.textContent =
+            QUESTIONS_PER_GAME;
+
+
+
+        /* ======================================================
+           문제 순서 랜덤화
+        ====================================================== */
+
+        function shuffleEmails() {
+
+            shuffledEmails = [...emails];
+
+
+            for (
+                let i = shuffledEmails.length - 1;
+                i > 0;
+                i--
+            ) {
+
+                const j =
+                    Math.floor(
+                        Math.random() * (i + 1)
+                    );
+
+
+                [
+                    shuffledEmails[i],
+                    shuffledEmails[j]
+                ] = [
+                    shuffledEmails[j],
+                    shuffledEmails[i]
+                ];
+
+            }
+
+
+            /* 전체 문제 중 10개만 사용 */
+            shuffledEmails =
+                shuffledEmails.slice(
+                    0,
+                    QUESTIONS_PER_GAME
+                );
+        }
+
+
+
+        /* ======================================================
+           문제 표시
+        ====================================================== */
+
+        function showQuestion() {
+
+            const email =
+                shuffledEmails[currentQuestion];
+
+
+            senderText.textContent =
+                email.sender;
+
+
+            subjectText.textContent =
+                email.subject;
+
+
+            messageText.textContent =
+                email.message;
+
+
+            questionNumberText.textContent =
+                currentQuestion + 1;
+
+
+            resultText.innerHTML = "";
+
+            resultText.classList.remove("result-pop");
+
+
+            statusText.textContent =
+                "PLAYING";
+
+
+            startTimer();
+        }
+
+
+        reduceMotionCheckbox.addEventListener(
+            "change",
+            function () {
+
+                if (reduceMotionCheckbox.checked === true) {
+                    resultText.classList.remove("result-pop");
+                }
+
+            }
+        );
+        /* ======================================================
+           새 문제 타이머
+        ====================================================== */
+
+        function startTimer() {
+
+            clearInterval(timer);
+
+
+            timeLeft = 5;
+
+
+            timeLeftText.textContent =
+                timeLeft;
+
+
+            timer = setInterval(
+                function () {
+
+                    timeLeft =
+                        timeLeft - 1;
+
+
+                    timeLeftText.textContent =
+                        timeLeft;
+
+
+                    if (timeLeft <= 0) {
+
+                        clearInterval(timer);
+
+                        checkAnswer("timeout");
+                    }
+
+                },
+
+                1000
+            );
+        }
+
+
+
+        /* ======================================================
+           일시정지 후 타이머 재개
+        ====================================================== */
+
+        function resumeTimer() {
+
+            clearInterval(timer);
+
+
+            timer = setInterval(
+                function () {
+
+                    timeLeft =
+                        timeLeft - 1;
+
+
+                    timeLeftText.textContent =
+                        timeLeft;
+
+
+                    if (timeLeft <= 0) {
+
+                        clearInterval(timer);
+
+                        checkAnswer("timeout");
+                    }
+
+                },
+
+                1000
+            );
+        }
+
+
+
+        /* ======================================================
+           정답 확인
+        ====================================================== */
+
+        function createConfetti() {
+
+                        const pieces = 14;
+
+                        for (let i = 0; i < pieces; i++) {
+
+                            const confetti =
+                                document.createElement("span");
+
+                            confetti.classList.add("confetti");
+
+
+                            const angle =
+                                Math.random() * Math.PI * 2;
+
+                            const distance =
+                                40 + Math.random() * 60;
+
+
+                            const x =
+                                Math.cos(angle) * distance;
+
+                            const y =
+                                Math.sin(angle) * distance;
+
+
+                            confetti.style.setProperty(
+                                "--x",
+                                x + "px"
+                            );
+
+                            confetti.style.setProperty(
+                                "--y",
+                                y + "px"
+                            );
+
+
+                            /*
+                                몇 가지 색 중 하나를 랜덤 선택
+                            */
+                            const colors = [
+                                "#f2c94c",
+                                "#6fcf97",
+                                "#56ccf2",
+                                "#bb6bd9",
+                                "#eb5757"
+                            ];
+
+                            confetti.style.backgroundColor =
+                                colors[
+                                    Math.floor(
+                                        Math.random() *
+                                        colors.length
+                                    )
+                                ];
+
+
+                            confetti.style.left =
+                                "50%";
+
+                            confetti.style.top =
+                                "50%";
+
+
+                            resultText.appendChild(
+                                confetti
+                            );
+
+
+                            setTimeout(
+                                function () {
+
+                                    confetti.remove();
+
+                                },
+                                700
+                            );
+                        }
+                    }
+                    
+                    
+                    function checkAnswer(userAnswer) {
+
+                clearInterval(timer);
+
+
+                const correctAnswer =
+                    shuffledEmails[currentQuestion].answer;
+
+
+                if (userAnswer === correctAnswer) {
+
+                    score =
+                        score + 1;
+
+                    scoreText.textContent =
+                        score;
+                }
+
+
+                currentQuestion =
+                    currentQuestion + 1;
+
+
+
+                /* 아직 문제가 남은 경우 */
+                if (
+                    currentQuestion <
+                    QUESTIONS_PER_GAME
+                ) {
+
+                    showQuestion();
+
+                }
+
+
+                /* 10문제가 모두 끝난 경우 */
+                else {
+
+                    safeButton.disabled = true;
+                    phishingButton.disabled = true;
+                    pauseButton.disabled = true;
+
+
+                    /* 최고 점수 저장 */
+                    if (score > bestScore) {
+
+                        bestScore = score;
+
+                        bestScoreText.textContent =
+                            bestScore;
+
+                        saveBestScore();
+                    }
+
+
+                    /* SUCCESS */
+                    if (score >= 7) {
+
+                        statusText.textContent =
+                            "SUCCESS";
+
+
+                        resultText.innerHTML =
+
+                            '<div class="result-success">' +
+
+                                '<div class="result-icon">' +
+                                    '✓' +
+                                '</div>' +
+
+                                '<div class="result-text">' +
+
+                                    '<strong>' +
+                                        '판별 완료' +
+                                    '</strong>' +
+
+                                    '<span>' +
+                                        score +
+                                        ' / ' +
+                                        QUESTIONS_PER_GAME +
+                                    '</span>' +
+
+                                    '<small>' +
+                                        'PHISHING CHECK PASSED' +
+                                    '</small>' +
+
+                                '</div>' +
+
+                            '</div>';
+
+
+                        /*
+                            움직임 효과 줄이기가 꺼져 있을 때만
+                            성공 팝 + 폭죽 실행
+                        */
+                        if (reduceMotionCheckbox.checked === false) {
+
+                            resultText.classList.add("result-pop");
+
+                            createConfetti();
+
+                        }
+
+                    }
+
+
+                    /* FAIL */
+                    else {
+
+                        statusText.textContent =
+                            "FAIL";
+
+
+                        resultText.innerHTML =
+
+                            '<div class="result-fail">' +
+
+                                '<div class="result-icon">' +
+                                    '!' +
+                                '</div>' +
+
+                                '<div class="result-text">' +
+
+                                    '<strong>' +
+                                        '다시 확인해보세요' +
+                                    '</strong>' +
+
+                                    '<span>' +
+                                        score +
+                                        ' / ' +
+                                        QUESTIONS_PER_GAME +
+                                    '</span>' +
+
+                                    '<small>' +
+                                        'PHISHING CHECK FAILED' +
+                                    '</small>' +
+
+                                '</div>' +
+
+                            '</div>';
+
+
+                        /*
+                            실패는 팝 효과만
+                            폭죽은 없음
+                        */
+                        if (reduceMotionCheckbox.checked === false) {
+
+                            resultText.classList.add("result-pop");
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+
+        /* ======================================================
+           정상 메일 버튼
+        ====================================================== */
+
+        safeButton.addEventListener(
+            "click",
+            function () {
+
+                checkAnswer("safe");
+            }
+        );
+
+
+
+        /* ======================================================
+           피싱 메일 버튼
+        ====================================================== */
+
+        phishingButton.addEventListener(
+            "click",
+            function () {
+
+                checkAnswer("phishing");
+            }
+        );
+
+
+
+        /* ======================================================
+           일시정지 / 계속하기
+        ====================================================== */
+
+        pauseButton.addEventListener(
+            "click",
+            function () {
+
+
+                /* 일시정지 */
+                if (isPaused === false) {
+
+                    isPaused = true;
+
+                    clearInterval(timer);
+
+
+                    statusText.textContent =
+                        "PAUSED";
+
+
+                    pauseButton.textContent =
+                        "계속하기";
+
+
+                    safeButton.disabled = true;
+
+                    phishingButton.disabled = true;
+
+                }
+
+
+                /* 계속하기 */
+                else {
+
+                    isPaused = false;
+
+                    autoPaused = false;
+
+
+                    statusText.textContent =
+                        "PLAYING";
+
+
+                    pauseButton.textContent =
+                        "일시정지";
+
+
+                    safeButton.disabled = false;
+
+                    phishingButton.disabled = false;
+
+
+                    resumeTimer();
+
+                }
+
+            }
+        );
+
+
+
+        /* ======================================================
+           다른 탭 / 프로그램으로 이동하면 자동 일시정지
+        ====================================================== */
+
+        document.addEventListener(
+            "visibilitychange",
+            function () {
+
+
+                /* 화면에서 벗어난 경우 */
+                if (document.hidden) {
+
+
+                    /*
+                        게임이 진행 중일 때만
+                        자동 일시정지
+                    */
+                    if (
+
+                        isPaused === false &&
+
+                        currentQuestion <
+                        QUESTIONS_PER_GAME
+
+                    ) {
+
+                        clearInterval(timer);
+
+
+                        isPaused = true;
+
+                        autoPaused = true;
+
+
+                        statusText.textContent =
+                            "PAUSED";
+
+
+                        pauseButton.textContent =
+                            "계속하기";
+
+
+                        safeButton.disabled = true;
+
+                        phishingButton.disabled = true;
+
+                    }
+
+                }
+
+
+                /* 다시 화면으로 돌아온 경우 */
+                else {
+
+
+                    /*
+                        자동으로 다시 시작하지 않는다.
+                        사용자가 '계속하기'를 눌러야 한다.
+                    */
+                    if (autoPaused === true) {
+
+                        statusText.textContent =
+                            "PAUSED";
+
+                    }
+
+                }
+
+            }
+        );
+
+
+
+        /* ======================================================
+           다시 시작
+        ====================================================== */
+
+        restartButton.addEventListener(
+            "click",
+            function () {
+
+
+                clearInterval(timer);
+
+
+                currentQuestion = 0;
+
+                score = 0;
+
+                timeLeft = 5;
+
+
+                isPaused = false;
+
+                autoPaused = false;
+
+
+                scoreText.textContent =
+                    0;
+
+
+                timeLeftText.textContent =
+                    5;
+
+
+                resultText.innerHTML =
+                    "";
+
+
+                pauseButton.textContent =
+                    "일시정지";
+
+
+                safeButton.disabled =
+                    false;
+
+
+                phishingButton.disabled =
+                    false;
+
+
+                pauseButton.disabled =
+                    false;
+
+
+                /*
+                    다시 시작할 때마다
+                    문제를 다시 랜덤으로 섞는다.
+                */
+                shuffleEmails();
+
+                showQuestion();
+
+            }
+        );
+
+
+
+        /* ======================================================
+           최초 게임 시작
+        ====================================================== */
+
+        loadBestScore();
+
+        shuffleEmails();
+        showQuestion();
+
+
+    </script>
+
+</body>
+
+</html>

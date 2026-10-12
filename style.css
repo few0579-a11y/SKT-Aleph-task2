@@ -1,0 +1,642 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 16px 20px;
+
+    font-family:
+        Arial,
+        "Noto Sans KR",
+        sans-serif;
+
+    background: #f4f6f8;
+    color: #202124;
+}
+
+
+.game-container {
+    width: min(94%, 900px);
+
+    margin: 0 auto;
+
+    padding: 20px 24px 22px;
+
+    background: #ffffff;
+
+    border: 1px solid #e3e6ea;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 6px 20px
+        rgba(0, 0, 0, 0.045);
+}
+
+
+h1 {
+    margin: 0 0 14px;
+
+    font-size: 27px;
+
+    color: #30343b;
+
+    letter-spacing: 0.5px;
+}
+
+
+h2 {
+    margin: 0 0 6px;
+
+    font-size: 17px;
+
+    color: #3f4650;
+}
+
+
+/* 게임 설명 */
+.guide {
+    margin-bottom: 12px;
+
+    padding: 11px 14px;
+
+    background: #f8f9fa;
+
+    border: 1px solid #e5e7ea;
+
+    border-radius: 9px;
+}
+
+
+.guide p {
+    margin: 4px 0;
+
+    line-height: 1.5;
+
+    font-size: 14px;
+
+    color: #535a64;
+}
+
+
+/* 상태 영역 */
+.status-box {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 24px;
+
+    margin-bottom: 12px;
+
+    padding: 11px 16px;
+
+    background: #eceff2;
+
+    border-radius: 9px;
+
+    color: #343a42;
+}
+
+
+.status-info {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.status-info p {
+    margin: 3px 0;
+
+    font-size: 14px;
+}
+
+
+/* 결과 영역 */
+.result-box {
+    flex: 1;
+
+    min-width: 0;
+
+    min-height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 4px 8px;
+
+    background: transparent;
+
+    color: #343a42;
+}
+
+
+.result-success,
+.result-fail {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    width: 100%;
+}
+
+
+.result-icon {
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 18px;
+
+    font-weight: 700;
+}
+
+
+.result-success .result-icon {
+    background: #e8f5ec;
+
+    color: #2f7a49;
+}
+
+
+.result-fail .result-icon {
+    background: #faeaea;
+
+    color: #b03c3c;
+}
+
+
+.result-text {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1px;
+
+    line-height: 1.2;
+}
+
+
+.result-text strong {
+    font-size: 15px;
+
+    color: #343a42;
+}
+
+
+.result-text span {
+    font-size: 14px;
+
+    color: #59616b;
+}
+
+
+.result-text small {
+    margin-top: 2px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.5px;
+
+    color: #9298a0;
+}
+
+
+/* 메일 전체 영역 */
+.mail-layout {
+    display: grid;
+
+    grid-template-columns:
+        155px minmax(0, 1fr);
+
+    width: 100%;
+
+    margin-bottom: 12px;
+
+    background: #ffffff;
+
+    border: 1px solid #dde1e5;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+
+/* 왼쪽 메일함 */
+.mail-sidebar {
+    padding: 12px 9px;
+
+    background: #f6f7f9;
+
+    border-right:
+        1px solid #e1e4e8;
+}
+
+
+.mail-logo {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    margin: 2px auto 12px;
+
+    background: #e9ecef;
+
+    border-radius: 9px;
+
+    font-size: 18px;
+
+    color: #59616c;
+}
+
+
+.mail-menu {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 2px;
+
+    padding: 7px 9px;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+
+    color: #737b86;
+}
+
+
+.mail-menu.active {
+    background: #e8ebef;
+
+    color: #3d444d;
+
+    font-weight: 600;
+}
+
+
+.menu-icon {
+    width: 17px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    color: #747c86;
+}
+
+
+/* 오른쪽 메일 카드 */
+.mail-card {
+    min-width: 0;
+
+    background: #ffffff;
+}
+
+
+.mail-toolbar {
+    padding: 10px 18px;
+
+    background: #fafafa;
+
+    border-bottom:
+        1px solid #e5e7ea;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #505761;
+}
+
+
+.mail-header {
+    padding: 10px 18px;
+
+    border-bottom:
+        1px solid #eceef0;
+}
+
+
+.mail-header p {
+    display: grid;
+
+    grid-template-columns:
+        78px minmax(0, 1fr);
+
+    gap: 10px;
+
+    margin: 5px 0;
+
+    line-height: 1.4;
+
+    font-size: 14px;
+
+    overflow-wrap: anywhere;
+}
+
+
+.mail-label {
+    color: #8b929b;
+
+    font-size: 12px;
+}
+
+
+/* 메일 본문 */
+.mail-body {
+    min-height: 82px;
+
+    padding: 14px 18px;
+
+    background: #ffffff;
+}
+
+
+#message {
+    margin: 0;
+
+    line-height: 1.6;
+
+    font-size: 15px;
+
+    color: #30343a;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* 버튼 영역 */
+.answer-buttons,
+.control-buttons {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+
+.answer-buttons {
+    margin-top: 2px;
+}
+
+
+.control-buttons {
+    margin-top: 7px;
+}
+
+
+/* 버튼 */
+button {
+    min-width: 125px;
+
+    padding: 9px 16px;
+
+    background: #ffffff;
+
+    border:
+        1px solid #d9dde2;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #444b54;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        transform 0.15s;
+}
+
+
+button:hover {
+    background: #f6f7f8;
+
+    transform:
+        translateY(-1px);
+}
+
+
+button:active {
+    transform:
+        translateY(0);
+}
+
+
+button:disabled {
+    opacity: 0.45;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* 정상 메일 */
+#safeButton {
+    background: #eef7f1;
+
+    border-color: #d2e8d9;
+
+    color: #326347;
+}
+
+
+/* 피싱 메일 */
+#phishingButton {
+    background: #fbefef;
+
+    border-color: #efd4d4;
+
+    color: #9a3d3d;
+}
+
+
+/* 제어 버튼 */
+#pauseButton,
+#restartButton {
+    background: #ffffff;
+
+    color: #656d77;
+}
+
+
+/* 화면 높이가 큰 경우 위 여백 추가 */
+@media (min-height: 900px) {
+
+    body {
+        padding-top: 60px;
+    }
+}
+
+
+/* 작은 화면 대응 */
+@media (max-width: 700px) {
+
+    body {
+        padding:
+            15px 10px;
+    }
+
+
+    .game-container {
+        width: 100%;
+
+        padding:
+            18px 15px;
+    }
+
+
+    .status-box {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 8px;
+    }
+
+
+    .result-box {
+        justify-content: flex-start;
+    }
+
+
+    .result-success,
+    .result-fail {
+        justify-content: flex-start;
+    }
+
+
+    .mail-layout {
+        grid-template-columns: 1fr;
+    }
+
+
+    .mail-sidebar {
+        display: none;
+    }
+
+
+    .answer-buttons,
+    .control-buttons {
+        flex-direction: column;
+    }
+
+
+    button {
+        width: 100%;
+
+        min-width: 0;
+    }
+}
+
+.effect-option {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 10px;
+
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.effect-option input {
+    cursor: pointer;
+}
+
+
+/* 결과가 나타날 때 효과 */
+.result-pop {
+    animation: resultPop 0.35s ease;
+}
+
+
+@keyframes resultPop {
+
+    0% {
+        transform: scale(0.92);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
+.confetti {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    pointer-events: none;
+
+    animation: confettiBurst 0.6s ease-out forwards;
+}
+
+@keyframes confettiBurst {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translate(
+                var(--x),
+                var(--y)
+            )
+            rotate(180deg)
+            scale(0.4);
+
+        opacity: 0;
+    }
+}
+
+.result-box {
+    position: relative;
+    overflow: visible;
+}
